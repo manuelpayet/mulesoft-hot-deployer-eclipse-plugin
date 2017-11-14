@@ -1,21 +1,34 @@
 package mulesofthotdeploy.views;
 
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.part.*;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.ViewPart;
 
 import component.DeploymentViewer;
-
-import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.jface.action.*;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.ui.*;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.SWT;
 
 
 /**
@@ -48,39 +61,6 @@ public class MulesoftHotDeploy extends ViewPart {
 	private Action action2;
 	private Action doubleClickAction;
 
-	/*
-	 * The content provider class is responsible for
-	 * providing objects to the view. It can wrap
-	 * existing objects in adapters or simply return
-	 * objects as-is. These objects may be sensitive
-	 * to the current input of the view, or ignore
-	 * it and always show the same content 
-	 * (like Task List, for example).
-	 */
-	 
-	class ViewContentProvider implements IStructuredContentProvider {
-		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-		}
-		public void dispose() {
-		}
-		public Object[] getElements(Object parent) {
-			return new String[] {"one", "two", "three"};
-		}
-	}
-	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
-		public String getColumnText(Object obj, int index) {
-			return getText(obj);
-		}
-		public Image getColumnImage(Object obj, int index) {
-			return getImage(obj);
-		}
-		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().
-					getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
-		}
-	}
-	class NameSorter extends ViewerSorter {
-	}
 
 	/**
 	 * The constructor.
@@ -93,35 +73,7 @@ public class MulesoftHotDeploy extends ViewPart {
 	 * to create the viewer and initialize it.
 	 */
 	public void createPartControl(Composite parent) {
-		viewer = new DeploymentViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-//		viewer = CheckboxTableViewer.newCheckList(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-//		//viewer.setContentProvider(new ViewContentProvider());
-//		viewer.setSorter(new NameSorter());
-//		viewer.setInput(getViewSite());
-//		final Table table = viewer.getTable();
-//		table.setHeaderVisible(true);
-//
-//		final TableViewerColumn moduleColumn = new TableViewerColumn(viewer,SWT.LEFT, 0);
-//		moduleColumn.getColumn().setText("module");
-//		moduleColumn.getColumn().setWidth(100);
-//		moduleColumn.getColumn().setResizable(true);
-//		moduleColumn.setLabelProvider(new ColumnLabelProvider() {
-//			 public String getText(Object element) {
-//	                return "coucou";
-//	            }
-//		});
-//		
-//		
-//		final TableViewerColumn deploymentStatus = new TableViewerColumn(viewer,SWT.LEFT, 1);
-//		deploymentStatus.getColumn().setText("Statut");
-//		deploymentStatus.getColumn().setWidth(100);
-//		deploymentStatus.getColumn().setResizable(true);
-//		deploymentStatus.setLabelProvider(new ColumnLabelProvider() {
-//			 public String getText(Object element) {
-//	                return "coucou2";
-//	            }
-//		});
-		
+		viewer = new DeploymentViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CHECK);
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "mulesoft-hot-deploy.viewer");
 		makeActions();

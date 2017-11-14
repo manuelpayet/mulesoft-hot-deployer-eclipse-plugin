@@ -3,7 +3,6 @@ package component;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -11,6 +10,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 
+import data.provider.ColumnLabelProviderImpl;
 import data.provider.ContentProvider;
 
 public class DeploymentViewer extends TableViewer {
@@ -42,16 +42,18 @@ public class DeploymentViewer extends TableViewer {
 		int[] bounds = { 150, 150, 100, 150, 100 };
 
 		TableViewerColumn column = createTableViewerColumn(titles[0], bounds[0], 0);
-		column.setLabelProvider(new ColumnLabelProvider() {
-			public String getText(Object element) {
-				return super.getText("coucou");
+		column.setLabelProvider(new ColumnLabelProviderImpl<String[]>() {
+			@Override
+			public String getTextFromTyped(String[] element) {
+				return element[0];
 			}
 		});
 
 		column = createTableViewerColumn(titles[1], bounds[1], 1);
-		column.setLabelProvider(new ColumnLabelProvider() {
-			public String getText(Object element) {
-				return super.getText("coucou2");
+		column.setLabelProvider(new ColumnLabelProviderImpl<String[]>() {
+			@Override
+			public String getTextFromTyped(String[] element) {
+				return element[1];
 			}
 		});
 
