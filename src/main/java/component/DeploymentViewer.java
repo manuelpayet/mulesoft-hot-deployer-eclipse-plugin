@@ -3,7 +3,6 @@ package component;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -11,6 +10,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 
+import data.dto.DeploymentStatus;
+import data.dto.Module;
+import data.editorsupport.CheckboxEditor;
+import data.provider.ColumnLabelProviderImpl;
 import data.provider.ContentProvider;
 
 public class DeploymentViewer extends TableViewer {
@@ -24,34 +27,68 @@ public class DeploymentViewer extends TableViewer {
 		createColumns();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		final List<String[]> lst = new ArrayList<>();
-		lst.add(new String[] { "module1", "déployé" });
-		lst.add(new String[] { "module2", "pas déployé" });
+		final List<Module> lst = new ArrayList<>();
+		lst.add(new Module("clic-site", DeploymentStatus.DEPLOIEMENT_EN_COURS,true));
+		lst.add(new Module("clic-validation", DeploymentStatus.DEPLOYE, false));
+		lst.add(new Module("clic-site", DeploymentStatus.DEPLOIEMENT_EN_COURS,true));
+		
 
-		setContentProvider(new ContentProvider<String[]>() {
-			@Override
-			public String[] getColumnsName(String[] line) {
-				return line;
-			}
-		});
+		setContentProvider(new ContentProvider<Module>(){});
 		this.setInput(lst);
 	}
 
 	private void createColumns() {
-		String[] titles = { "Module", "Statut" };
-		int[] bounds = { 150, 150, 100, 150, 100 };
+		String[] titles = { "A déployer", "Module", "Statut", "Responsable" };
+		int[] bounds = { 150, 150, 150, 150 };
+		int columnIdx = 0;
+		TableViewerColumn column = createTableViewerColumn(titles[columnIdx], bounds[columnIdx], columnIdx++);
+		column.setLabelProvider(new ColumnLabelProviderImpl<Module>() {
+			@Override
+			public String getTextFromType(Module element) {
+				return null;
+			}
+		});
+		
+		column.setEditingSupport(new CheckboxEditor<Module>() {
 
-		TableViewerColumn column = createTableViewerColumn(titles[0], bounds[0], 0);
-		column.setLabelProvider(new ColumnLabelProvider() {
-			public String getText(Object element) {
-				return super.getText("coucou");
+			@Override
+			protected boolean typedCanEdit(Module object) {
+				return true;
+			}
+
+			@Override
+			protected Boolean typedGetValue(Module object) {
+				return object.isToHotDeploy();
+			}
+
+			@Override
+			protected void typedSetValue(Module element, Boolean value) {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 
-		column = createTableViewerColumn(titles[1], bounds[1], 1);
-		column.setLabelProvider(new ColumnLabelProvider() {
-			public String getText(Object element) {
-				return super.getText("coucou2");
+		column = createTableViewerColumn(titles[columnIdx], bounds[columnIdx], columnIdx++);
+		column.setLabelProvider(new ColumnLabelProviderImpl<Module>() {
+			@Override
+			public String getTextFromType(Module element) {
+				return element.getModuleName();
+			}
+		});
+
+		column = createTableViewerColumn(titles[columnIdx], bounds[columnIdx], columnIdx++);
+		column.setLabelProvider(new ColumnLabelProviderImpl<Module>() {
+			@Override
+			public String getTextFromType(Module element) {
+				return element.getDeploymentStatus().getLabel();
+			}
+		});
+
+		column = createTableViewerColumn(titles[columnIdx], bounds[columnIdx], columnIdx++);
+		column.setLabelProvider(new ColumnLabelProviderImpl<Module>() {
+			@Override
+			public String getTextFromType(Module element) {
+				return element.isMulesoftManaged() ? "Mulesoft" : "Plugin Hot Deploy";
 			}
 		});
 
