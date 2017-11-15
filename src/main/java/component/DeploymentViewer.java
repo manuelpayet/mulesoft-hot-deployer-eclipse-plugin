@@ -45,12 +45,11 @@ public class DeploymentViewer extends TableViewer {
 		column.setLabelProvider(new ColumnLabelProviderImpl<Module>() {
 			@Override
 			public String getTextFromType(Module element) {
-				return null;
+				return element.isToHotDeploy()?Character.toString((char)0x2611):Character.toString((char)0x2610);
 			}
 		});
 		
-		column.setEditingSupport(new CheckboxEditor<Module>() {
-
+		column.setEditingSupport(new CheckboxEditor<Module>(this) {
 			@Override
 			protected boolean typedCanEdit(Module object) {
 				return true;
@@ -63,7 +62,7 @@ public class DeploymentViewer extends TableViewer {
 
 			@Override
 			protected void typedSetValue(Module element, Boolean value) {
-				// TODO Auto-generated method stub
+				element.setToHotDeploy(value);
 				
 			}
 		});
