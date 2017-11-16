@@ -1,4 +1,4 @@
-package data.provider;
+package component.provider;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 

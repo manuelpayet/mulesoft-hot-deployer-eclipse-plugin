@@ -22,7 +22,8 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-import component.DeploymentViewer;
+import component.viewer.DeploymentViewer;
+import data.operations.DeploymentHandler;
 
 
 /**
@@ -50,7 +51,8 @@ public class MulesoftHotDeploy extends ViewPart {
 	 */
 	public static final String ID = "mulesofthotdeploy.views.MulesoftHotDeploy";
 
-	private TableViewer viewer;
+	private DeploymentViewer viewer;
+	private DeploymentHandler deploymentHandler;
 	private Action action1;
 	private Action action2;
 	private Action doubleClickAction;
@@ -62,12 +64,15 @@ public class MulesoftHotDeploy extends ViewPart {
 	public MulesoftHotDeploy() {
 	}
 
+	
 	/**
 	 * This is a callback that will allow us
 	 * to create the viewer and initialize it.
 	 */
 	public void createPartControl(Composite parent) {
 		viewer = new DeploymentViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		deploymentHandler = new DeploymentHandler(viewer);
+		deploymentHandler.updateModulesFromCurrentState();
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "mulesoft-hot-deploy.viewer");
 		//makeActions();

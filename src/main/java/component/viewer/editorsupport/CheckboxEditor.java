@@ -1,10 +1,9 @@
-package data.editorsupport;
+package component.viewer.editorsupport;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.SWT;
 
 public abstract class CheckboxEditor<T> extends EditingSupport {
 
@@ -21,13 +20,11 @@ public abstract class CheckboxEditor<T> extends EditingSupport {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected boolean canEdit(Object object) {
-		System.out.println("canEdit");
 		return typedCanEdit((T) object);
 	}
 
 	@Override
 	protected CellEditor getCellEditor(Object arg0) {
-		System.out.println("cellEditor");
 		return cellEditor;
 	}
 

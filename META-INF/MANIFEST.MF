@@ -5,6 +5,9 @@ Bundle-SymbolicName: mulesoft-hot-deploy;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: mulesoft_hot_deploy.Activator
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources;bundle-version="3.10.1",
+ org.eclipse.m2e.maven.runtime;bundle-version="1.6.2",
+ org.eclipse.m2e.maven.runtime.slf4j.simple;bundle-version="1.6.2"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

@@ -13,6 +13,12 @@ public class Module {
 		this.mulesoftManaged = mulesoftManaged;
 	}
 
+	@Override
+	public String toString() {
+		return "Module [moduleName=" + moduleName + ", deploymentStatus=" + deploymentStatus + ", mulesoftManaged="
+				+ mulesoftManaged + ", toHotDeploy=" + toHotDeploy + "]";
+	}
+
 	public boolean isToHotDeploy() {
 		return toHotDeploy;
 	}
