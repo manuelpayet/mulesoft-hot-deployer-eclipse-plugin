@@ -3,7 +3,8 @@ package data.dto;
 public enum DeploymentStatus {
 	DEPLOYE("Déployé"),
 	DEPLOIEMENT_EN_COURS("A déployer"),
-	NON_DEPLOYE("Non deployé");
+	NON_DEPLOYE("Non deployé"),
+	INCONNU("Inconnu");
 	private final String label;
 	private DeploymentStatus(final String label) {
 		this.label = label;

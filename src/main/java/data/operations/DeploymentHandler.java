@@ -1,25 +1,41 @@
 package data.operations;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.WatchEvent.Kind;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
-import component.event.ModelChangedEvent;
+import component.event.ModelChangedEventListener;
 import component.viewer.ModelUpdateListener;
 import data.dto.DeploymentStatus;
 import data.dto.Module;
+import data.operations.event.FileChangedEventListener;
+import data.operations.impl.ModuleSummary;
 import utils.EclipsePluginHelper;
 
-public class DeploymentHandler implements ModelChangedEvent {
+public class DeploymentHandler implements ModelChangedEventListener, FileChangedEventListener {
 
 	private final List<ModelUpdateListener> lstModelUpdate = new ArrayList<>();
+	private final DirectoryWatcher directoryWatcher;
+	final Path appDeploymentFolder;
 
 	public DeploymentHandler(ModelUpdateListener... listeners) {
 		lstModelUpdate.addAll(Arrays.asList(listeners));
+		this.appDeploymentFolder = Paths.get(EclipsePluginHelper.INSTANCE.getWorkspaceLocation().toString(), ".mule",
+				"apps");
+		this.directoryWatcher = new DirectoryWatcher(appDeploymentFolder, this);
+		this.directoryWatcher.startPolling();
 	}
 
 	public void addLstModelUpdate(final ModelUpdateListener modelUpdateListener) {
@@ -44,18 +60,25 @@ public class DeploymentHandler implements ModelChangedEvent {
 	}
 
 	private List<Module> listModulesFromCurrentState() {
+
+		final Map<String, ModuleSummary> deploymentSummary = DeploymentHandlerUtils.INSTANCE
+				.groupPathsByModuleType(appDeploymentFolder);
+
 		final EclipsePluginHelper eclipsePluginHelper = EclipsePluginHelper.INSTANCE;
 		return eclipsePluginHelper.listWorkspaceProjects().stream()
-				.filter(project -> eclipsePluginHelper.hasNature(project, EclipsePluginHelper.M2E_NATURE)).map(this::constructModule)
-				.collect(Collectors.toList());
+				.filter(project -> eclipsePluginHelper.hasNature(project, EclipsePluginHelper.M2E_NATURE))
+				.map(project -> this.constructModule(project, deploymentSummary)).collect(Collectors.toList());
 	}
 
-	private Module constructModule(final IProject eclipseProject) {
-		String name;
+	private Module constructModule(final IProject eclipseProject, final Map<String, ModuleSummary> deploymentSummary) {
+
 		try {
-			name = String.format("%s[%s]", eclipseProject.getDescription().getName(),
-					Arrays.asList(eclipseProject.getDescription().getNatureIds()));
-			return new Module(name, DeploymentStatus.DEPLOYE, false);
+			final String name = eclipseProject.getDescription().getName();
+			final DeploymentHandlerUtils deploymentHandlerUtils = DeploymentHandlerUtils.INSTANCE;
+			final boolean isMulesoftManaged = deploymentHandlerUtils.isMulesoftManaged(deploymentSummary.get(name));
+			final DeploymentStatus deploymentStatus = deploymentHandlerUtils
+					.getDeploymentStatus(deploymentSummary.get(name));
+			return new Module(name, deploymentStatus, isMulesoftManaged);
 		} catch (CoreException e) {
 			throw new RuntimeException(e);
 		}
@@ -64,5 +87,11 @@ public class DeploymentHandler implements ModelChangedEvent {
 	public void updateModulesFromCurrentState() {
 		List<Module> listModulesFromCurrentState = listModulesFromCurrentState();
 		lstModelUpdate.forEach(eventListener -> eventListener.setModules(listModulesFromCurrentState));
+	}
+
+	@Override
+	public void fileChanged(Path path, Kind<?> eventKind) {
+		System.out.println(String.format("%s -> %s", eventKind, path));
+		updateModulesFromCurrentState();
 	}
 }

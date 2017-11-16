@@ -1,4 +1,6 @@
 package utils;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,6 +24,10 @@ public enum EclipsePluginHelper {
 		} catch (CoreException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public Path getWorkspaceLocation() {
+		return Paths.get(ResourcesPlugin.getWorkspace().getRoot().getLocationURI());
 	}
 	
 }
