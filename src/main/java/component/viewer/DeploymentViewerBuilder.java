@@ -22,7 +22,13 @@ class DeploymentViewerBuilder {
 		column.setLabelProvider(new ColumnLabelProviderImpl<Module>() {
 			@Override
 			public String getTextFromType(Module element) {
-				return element.isToHotDeploy() ? Character.toString((char) 0x2611) : Character.toString((char) 0x2610);
+				final String checkbox;
+				if(element.isMulesoftManaged()) {
+					checkbox = "[Gestion par Anypoint]";
+				} else {
+					checkbox = element.isToHotDeploy() ? Character.toString((char) 0x2611) : Character.toString((char) 0x2610);
+				}
+				return checkbox;
 			}
 		});
 

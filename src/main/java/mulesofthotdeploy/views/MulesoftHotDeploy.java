@@ -12,7 +12,6 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
@@ -75,7 +74,8 @@ public class MulesoftHotDeploy extends ViewPart {
 		deploymentHandler.updateModulesFromCurrentState();
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "mulesoft-hot-deploy.viewer");
-		//makeActions();
+		makeActions();
+		contributeToActionBars();
 		//hookContextMenu();
 		//hookDoubleClickAction();
 		//contributeToActionBars();
@@ -127,24 +127,24 @@ public class MulesoftHotDeploy extends ViewPart {
 		action1.setText("Action 1");
 		action1.setToolTipText("Action 1 tooltip");
 		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-			getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+			getImageDescriptor(ISharedImages.IMG_TOOL_UP));
 		
-		action2 = new Action() {
-			public void run() {
-				showMessage("Action 2 executed");
-			}
-		};
-		action2.setText("Action 2");
-		action2.setToolTipText("Action 2 tooltip");
-		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-		doubleClickAction = new Action() {
-			public void run() {
-				ISelection selection = viewer.getSelection();
-				Object obj = ((IStructuredSelection)selection).getFirstElement();
-				showMessage("Double-click detected on "+obj.toString());
-			}
-		};
+//		action2 = new Action() {
+//			public void run() {
+//				showMessage("Action 2 executed");
+//			}
+//		};
+//		action2.setText("Action 2");
+//		action2.setToolTipText("Action 2 tooltip");
+//		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
+//				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+//		doubleClickAction = new Action() {
+//			public void run() {
+//				ISelection selection = viewer.getSelection();
+//				Object obj = ((IStructuredSelection)selection).getFirstElement();
+//				showMessage("Double-click detected on "+obj.toString());
+//			}
+//		};
 	}
 
 	private void hookDoubleClickAction() {

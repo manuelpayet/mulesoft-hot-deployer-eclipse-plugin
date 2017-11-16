@@ -18,6 +18,10 @@ public enum EclipsePluginHelper {
 		return Arrays.asList(projects);
 	}
 	
+	public Path getProjectLocation(final IProject project) {
+		return Paths.get(project.getLocation().toOSString());
+	}
+	
 	public boolean hasNature(final IProject project, final String nature) {
 		try {
 			return project.hasNature(nature);
