@@ -46,7 +46,7 @@ public class DeploymentHandler implements ModelChangedEvent {
 	private List<Module> listModulesFromCurrentState() {
 		final EclipsePluginHelper eclipsePluginHelper = EclipsePluginHelper.INSTANCE;
 		return eclipsePluginHelper.listWorkspaceProjects().stream()
-				.filter(project -> eclipsePluginHelper.hasNature(project, "org.eclipse.m2e.core.maven2Nature")).map(this::constructModule)
+				.filter(project -> eclipsePluginHelper.hasNature(project, EclipsePluginHelper.M2E_NATURE)).map(this::constructModule)
 				.collect(Collectors.toList());
 	}
 

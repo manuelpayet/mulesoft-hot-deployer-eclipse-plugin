@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.CoreException;
 public enum EclipsePluginHelper {
 	INSTANCE();
 	private EclipsePluginHelper() {};
-	
+	public final static String M2E_NATURE= "org.eclipse.m2e.core.maven2Nature";
 	public List<IProject> listWorkspaceProjects() {
 		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 		final IProject[] projects = workspaceRoot.getProjects();
