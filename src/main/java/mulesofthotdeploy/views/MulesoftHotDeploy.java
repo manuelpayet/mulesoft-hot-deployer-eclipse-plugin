@@ -1,45 +1,47 @@
 package mulesofthotdeploy.views;
 
+import java.io.File;
+import java.util.Arrays;
 
+import org.apache.maven.Maven;
+import org.apache.maven.execution.MavenExecutionRequest;
+import org.apache.maven.execution.MavenExecutionResult;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.m2e.core.MavenPlugin;
+import org.eclipse.m2e.core.embedder.ICallable;
+import org.eclipse.m2e.core.embedder.IMaven;
+import org.eclipse.m2e.core.embedder.IMavenExecutionContext;
+import org.eclipse.m2e.core.internal.embedder.MavenImpl;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import component.viewer.DeploymentViewer;
 import data.operations.DeploymentHandler;
-
+import maven.PomGenerator;
+import utils.EclipsePluginHelper;
 
 /**
- * This sample class demonstrates how to plug-in a new
- * workbench view. The view shows data obtained from the
- * model. The sample creates a dummy model on the fly,
- * but a real implementation would connect to the model
- * available either in this or another plug-in (e.g. the workspace).
- * The view is connected to the model using a content provider.
+ * This sample class demonstrates how to plug-in a new workbench view. The view
+ * shows data obtained from the model. The sample creates a dummy model on the
+ * fly, but a real implementation would connect to the model available either in
+ * this or another plug-in (e.g. the workspace). The view is connected to the
+ * model using a content provider.
  * <p>
- * The view uses a label provider to define how model
- * objects should be presented in the view. Each
- * view can present the same model objects using
- * different labels and icons, if needed. Alternatively,
- * a single label provider can be shared between views
- * in order to ensure that objects of the same type are
- * presented in the same way everywhere.
+ * The view uses a label provider to define how model objects should be
+ * presented in the view. Each view can present the same model objects using
+ * different labels and icons, if needed. Alternatively, a single label provider
+ * can be shared between views in order to ensure that objects of the same type
+ * are presented in the same way everywhere.
  * <p>
  */
 
@@ -52,10 +54,8 @@ public class MulesoftHotDeploy extends ViewPart {
 
 	private DeploymentViewer viewer;
 	private DeploymentHandler deploymentHandler;
-	private Action action1;
-	private Action action2;
-	private Action doubleClickAction;
-
+	private Action mavenBuildSelectedProjects;
+	private Action deploySelectedProjectsAction;
 
 	/**
 	 * The constructor.
@@ -63,10 +63,9 @@ public class MulesoftHotDeploy extends ViewPart {
 	public MulesoftHotDeploy() {
 	}
 
-	
 	/**
-	 * This is a callback that will allow us
-	 * to create the viewer and initialize it.
+	 * This is a callback that will allow us to create the viewer and initialize
+	 * it.
 	 */
 	public void createPartControl(Composite parent) {
 		viewer = new DeploymentViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
@@ -76,22 +75,6 @@ public class MulesoftHotDeploy extends ViewPart {
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "mulesoft-hot-deploy.viewer");
 		makeActions();
 		contributeToActionBars();
-		//hookContextMenu();
-		//hookDoubleClickAction();
-		//contributeToActionBars();
-	}
-
-	private void hookContextMenu() {
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
-		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager manager) {
-				MulesoftHotDeploy.this.fillContextMenu(manager);
-			}
-		});
-		Menu menu = menuMgr.createContextMenu(viewer.getControl());
-		viewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, viewer);
 	}
 
 	private void contributeToActionBars() {
@@ -101,64 +84,63 @@ public class MulesoftHotDeploy extends ViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(action1);
+		manager.add(deploySelectedProjectsAction);
 		manager.add(new Separator());
-		manager.add(action2);
 	}
 
-	private void fillContextMenu(IMenuManager manager) {
-		manager.add(action1);
-		manager.add(action2);
-		// Other plug-ins can contribute there actions here
-		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-	}
-	
 	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(deploySelectedProjectsAction);
+		manager.add(mavenBuildSelectedProjects);
+	}
+
+	private void invokeMaven() {
+		final IMaven maven = MavenPlugin.getMaven();
+		IMavenExecutionContext context;
+		try {
+			context = maven.createExecutionContext();
+			final MavenExecutionRequest request = context.getExecutionRequest();
+			File pomFile = PomGenerator.INSTANCE
+					.generatePomForEclipseProjects(EclipsePluginHelper.INSTANCE.listWorkspaceProjects()).toFile();
+			request.setBaseDirectory(pomFile.getParentFile());
+			request.setGoals(Arrays.asList("clean", "package"));
+			request.setUpdateSnapshots(false);
+			
+			MavenExecutionResult result = context.execute(new ICallable<MavenExecutionResult>() {
+			    public MavenExecutionResult call(IMavenExecutionContext context, IProgressMonitor innerMonitor) throws CoreException {
+			     return ((MavenImpl)maven).lookupComponent(Maven.class)
+			           .execute(request);
+			    }
+			  }, null);
+			
+		} catch (CoreException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void makeActions() {
-		action1 = new Action() {
+		mavenBuildSelectedProjects = new Action() {
+			public void run() {
+				invokeMaven();
+			}
+		};
+		mavenBuildSelectedProjects.setText("Construire les projets sélectionnés");
+		mavenBuildSelectedProjects.setToolTipText("Construire les projets sélectionnés");
+		mavenBuildSelectedProjects.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
+			getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		
+		deploySelectedProjectsAction = new Action() {
 			public void run() {
 				showMessage("Action 1 executed");
 			}
 		};
-		action1.setText("Action 1");
-		action1.setToolTipText("Action 1 tooltip");
-		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
+		deploySelectedProjectsAction.setText("Déployer les projets sélectionnés");
+		deploySelectedProjectsAction.setToolTipText("Action 1 tooltip");
+		deploySelectedProjectsAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
 			getImageDescriptor(ISharedImages.IMG_TOOL_UP));
-		
-//		action2 = new Action() {
-//			public void run() {
-//				showMessage("Action 2 executed");
-//			}
-//		};
-//		action2.setText("Action 2");
-//		action2.setToolTipText("Action 2 tooltip");
-//		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-//				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-//		doubleClickAction = new Action() {
-//			public void run() {
-//				ISelection selection = viewer.getSelection();
-//				Object obj = ((IStructuredSelection)selection).getFirstElement();
-//				showMessage("Double-click detected on "+obj.toString());
-//			}
-//		};
 	}
 
-	private void hookDoubleClickAction() {
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
-				doubleClickAction.run();
-			}
-		});
-	}
 	private void showMessage(String message) {
-		MessageDialog.openInformation(
-			viewer.getControl().getShell(),
-			"Mulesoft Hot Deploy",
-			message);
+		MessageDialog.openInformation(viewer.getControl().getShell(), "Mulesoft Hot Deploy", message);
 	}
 
 	/**

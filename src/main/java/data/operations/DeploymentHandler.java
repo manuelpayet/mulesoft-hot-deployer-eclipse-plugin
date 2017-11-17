@@ -1,14 +1,10 @@
 package data.operations;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent.Kind;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,7 +55,7 @@ public class DeploymentHandler implements ModelChangedEventListener, FileChanged
 		System.out.println(String.format("Suppression de %s", module));
 	}
 
-	private List<Module> listModulesFromCurrentState() {
+	private List<Module> listModulesFromAppsFolderState() {
 
 		final Map<String, ModuleSummary> deploymentSummary = DeploymentHandlerUtils.INSTANCE
 				.groupPathsByModuleType(appDeploymentFolder);
@@ -85,9 +81,21 @@ public class DeploymentHandler implements ModelChangedEventListener, FileChanged
 	}
 
 	public void updateModulesFromCurrentState() {
-		List<Module> listModulesFromCurrentState = listModulesFromCurrentState();
-		lstModelUpdate.forEach(eventListener -> eventListener.setModules(listModulesFromCurrentState));
+		
+		lstModelUpdate.forEach(this::updateModulesFromCurrentState);
 	}
+	
+	public void updateModulesFromCurrentState(final ModelUpdateListener modelUpdateListener) {
+		final Map<String, Module> modulesInModelToUpdate = DeploymentHandlerUtils.INSTANCE.mapModulesByName(modelUpdateListener.getModules());
+		final List<Module> listModulesFromCurrentState = listModulesFromAppsFolderState();
+		for(final Module module: listModulesFromCurrentState) {
+			final Module moduleFromModel = modulesInModelToUpdate.containsKey(module.getModuleName())? modulesInModelToUpdate.get(module.getModuleName()): module;
+			module.setToHotDeploy(moduleFromModel.isToHotDeploy());
+		}
+		modelUpdateListener.setModules(listModulesFromCurrentState);
+	}
+	
+	
 
 	@Override
 	public void fileChanged(Path path, Kind<?> eventKind) {

@@ -30,6 +30,7 @@ public class DeploymentViewer extends TableViewer implements ModelUpdateListener
 
 		setContentProvider(new ContentProvider<Module>() {
 		});
+		this.setInput(new ArrayList<Module>());
 	}
 
 	private List<ModelChangedEventListener> lstChangedEvents = new ArrayList<>();
@@ -42,6 +43,7 @@ public class DeploymentViewer extends TableViewer implements ModelUpdateListener
 		lstChangedEvents.forEach(eventListener -> eventListener.modelChanged(module));
 	}
 
+	
 	@Override
 	public void setModules(List<Module> lstModule) {
 		final DeploymentViewer that = this;
@@ -52,6 +54,12 @@ public class DeploymentViewer extends TableViewer implements ModelUpdateListener
 				that.refresh();
 			}
 		});
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Module> getModules() {
+		return (List<Module>) this.getInput();
 	}
 
 }
