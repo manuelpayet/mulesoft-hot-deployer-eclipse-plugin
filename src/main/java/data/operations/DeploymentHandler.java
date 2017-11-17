@@ -96,6 +96,11 @@ public class DeploymentHandler implements ModelChangedEventListener, FileChanged
 	}
 	
 	
+	public List<IProject> getSelectedProjects() {
+		final List<String> selectedProject = lstModelUpdate.get(0).getModules().stream().filter(Module::isToHotDeploy).map(Module::getModuleName).collect(Collectors.toList());
+		return EclipsePluginHelper.INSTANCE.listWorkspaceProjects().stream().filter(project->selectedProject.contains(project.getName())).collect(Collectors.toList());
+	}
+	
 
 	@Override
 	public void fileChanged(Path path, Kind<?> eventKind) {

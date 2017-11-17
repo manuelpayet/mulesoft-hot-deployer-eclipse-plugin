@@ -1,23 +1,22 @@
 package mulesofthotdeploy.views;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 
-import org.apache.maven.Maven;
+import javax.management.RuntimeErrorException;
+
+import org.apache.maven.DefaultMaven;
+import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequest;
-import org.apache.maven.execution.MavenExecutionResult;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.m2e.core.MavenPlugin;
-import org.eclipse.m2e.core.embedder.ICallable;
-import org.eclipse.m2e.core.embedder.IMaven;
-import org.eclipse.m2e.core.embedder.IMavenExecutionContext;
-import org.eclipse.m2e.core.internal.embedder.MavenImpl;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
@@ -27,6 +26,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import component.viewer.DeploymentViewer;
 import data.operations.DeploymentHandler;
+import maven.ExecutionJob;
 import maven.PomGenerator;
 import utils.EclipsePluginHelper;
 
@@ -93,28 +93,16 @@ public class MulesoftHotDeploy extends ViewPart {
 		manager.add(mavenBuildSelectedProjects);
 	}
 
+	// .toFile();
 	private void invokeMaven() {
-		final IMaven maven = MavenPlugin.getMaven();
-		IMavenExecutionContext context;
 		try {
-			context = maven.createExecutionContext();
-			final MavenExecutionRequest request = context.getExecutionRequest();
-			File pomFile = PomGenerator.INSTANCE
-					.generatePomForEclipseProjects(EclipsePluginHelper.INSTANCE.listWorkspaceProjects()).toFile();
-			request.setBaseDirectory(pomFile.getParentFile());
-			request.setGoals(Arrays.asList("clean", "package"));
-			request.setUpdateSnapshots(false);
-			
-			MavenExecutionResult result = context.execute(new ICallable<MavenExecutionResult>() {
-			    public MavenExecutionResult call(IMavenExecutionContext context, IProgressMonitor innerMonitor) throws CoreException {
-			     return ((MavenImpl)maven).lookupComponent(Maven.class)
-			           .execute(request);
-			    }
-			  }, null);
-			
+			new ExecutionJob("toto", PomGenerator.INSTANCE.generatePomForEclipseProjects(deploymentHandler.getSelectedProjects()), Arrays.asList("clean", "package")).runInWorkspace(new NullProgressMonitor() {
+				
+			});
 		} catch (CoreException e) {
 			throw new RuntimeException(e);
 		}
+		
 	}
 
 	private void makeActions() {
@@ -125,9 +113,9 @@ public class MulesoftHotDeploy extends ViewPart {
 		};
 		mavenBuildSelectedProjects.setText("Construire les projets sélectionnés");
 		mavenBuildSelectedProjects.setToolTipText("Construire les projets sélectionnés");
-		mavenBuildSelectedProjects.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-			getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
-		
+		mavenBuildSelectedProjects.setImageDescriptor(
+				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+
 		deploySelectedProjectsAction = new Action() {
 			public void run() {
 				showMessage("Action 1 executed");
@@ -135,8 +123,8 @@ public class MulesoftHotDeploy extends ViewPart {
 		};
 		deploySelectedProjectsAction.setText("Déployer les projets sélectionnés");
 		deploySelectedProjectsAction.setToolTipText("Action 1 tooltip");
-		deploySelectedProjectsAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-			getImageDescriptor(ISharedImages.IMG_TOOL_UP));
+		deploySelectedProjectsAction.setImageDescriptor(
+				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_UP));
 	}
 
 	private void showMessage(String message) {
