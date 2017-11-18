@@ -1,4 +1,4 @@
-package data.operations;
+package data.operations.generationhandler;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,7 +13,7 @@ import data.dto.DeploymentStatus;
 import data.dto.Module;
 import data.operations.impl.ModuleSummary;
 
-public enum DeploymentHandlerUtils {
+public enum GenerationHandlerUtils {
 	INSTANCE;
 	public List<Path> getZipFiles(final List<Path> paths) {
 		return paths.stream().filter(path -> path.toString().endsWith(".zip")).collect(Collectors.toList());
@@ -86,18 +86,18 @@ public enum DeploymentHandlerUtils {
 		}
 
 		final Map<String, ModuleSummary> groupedPaths = new HashMap<>();
-		final List<Path> zipFiles = DeploymentHandlerUtils.INSTANCE.getZipFiles(deploymentFolderContent);
-		final List<Path> directories = DeploymentHandlerUtils.INSTANCE.getDirectories(deploymentFolderContent);
-		final List<Path> anchors = DeploymentHandlerUtils.INSTANCE.getAnchors(deploymentFolderContent);
+		final List<Path> zipFiles = GenerationHandlerUtils.INSTANCE.getZipFiles(deploymentFolderContent);
+		final List<Path> directories = GenerationHandlerUtils.INSTANCE.getDirectories(deploymentFolderContent);
+		final List<Path> anchors = GenerationHandlerUtils.INSTANCE.getAnchors(deploymentFolderContent);
 		for (final Path zipFile : zipFiles) {
-			final String moduleName = DeploymentHandlerUtils.INSTANCE.extractModuleNameFromZip(zipFile);
+			final String moduleName = GenerationHandlerUtils.INSTANCE.extractModuleNameFromZip(zipFile);
 			final ModuleSummary moduleSummary = new ModuleSummary();
 			moduleSummary.setZipPath(zipFile);
 			groupedPaths.put(moduleName, moduleSummary);
 		}
 
 		for (final Path directory : directories) {
-			final String moduleName = DeploymentHandlerUtils.INSTANCE.extractModuleNameFromDirectory(directory);
+			final String moduleName = GenerationHandlerUtils.INSTANCE.extractModuleNameFromDirectory(directory);
 			final ModuleSummary moduleSummary;
 			if (!groupedPaths.containsKey(moduleName)) {
 				moduleSummary = new ModuleSummary();
@@ -109,7 +109,7 @@ public enum DeploymentHandlerUtils {
 		}
 
 		for (final Path anchor : anchors) {
-			final String moduleName = DeploymentHandlerUtils.INSTANCE.extractModuleNameFromAnchor(anchor);
+			final String moduleName = GenerationHandlerUtils.INSTANCE.extractModuleNameFromAnchor(anchor);
 			final ModuleSummary moduleSummary;
 			if (!groupedPaths.containsKey(moduleName)) {
 				moduleSummary = new ModuleSummary();
