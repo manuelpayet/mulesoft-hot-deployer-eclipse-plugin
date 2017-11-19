@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/mulesofthotdeployfeature_1.0.0.201711191436.jar" id="mulesofthotdeployfeature" version="1.0.0.201711191436"/>
+</site>
