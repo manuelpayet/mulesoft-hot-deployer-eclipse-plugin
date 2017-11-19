@@ -27,6 +27,9 @@ public enum EclipsePluginHelper {
 		return Arrays.asList(projects);
 	}
 
+	public IProject getProjectFromName(final String projectName) {
+		return ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+	}
 	public Path getProjectLocation(final IProject project) {
 		return Paths.get(project.getLocation().toOSString());
 	}

@@ -1,16 +1,10 @@
 package mulesofthotdeploy.views;
 
-import java.util.Iterator;
-import java.util.List;
-
-import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.m2e.actions.ExecutePomAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
@@ -20,8 +14,6 @@ import org.eclipse.ui.part.ViewPart;
 
 import component.viewer.DeploymentViewer;
 import data.operations.generationhandler.GenerationHandler;
-import maven.PomGenerator;
-import utils.EclipsePluginHelper;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -90,47 +82,6 @@ public class MulesoftHotDeploy extends ViewPart {
 		manager.add(deploySelectedProjectsAction);
 	}
 
-	@SuppressWarnings("restriction")
-	private void invokeMaven() {
-		final IProject projectTarget = EclipsePluginHelper.INSTANCE.createOrReturnExistingProject("Hot Deploy Files",
-				EclipsePluginHelper.M2E_NATURE);
-		PomGenerator.INSTANCE.generatePomForEclipseProjects(projectTarget, deploymentHandler.getSelectedProjects());
-		final ExecutePomAction  executePomAction = new ExecutePomAction();
-		executePomAction.setInitializationData(null, null, "clean install");
-		final IStructuredSelection selection = new IStructuredSelection() {
-			
-			@Override
-			public boolean isEmpty() {
-				return false;
-			}
-
-			@Override
-			public Object getFirstElement() {
-				return projectTarget;
-			}
-
-			@Override
-			public Iterator iterator() {
-				return null;
-			}
-
-			@Override
-			public int size() {
-				return 0;
-			}
-
-			@Override
-			public Object[] toArray() {
-				return null;
-			}
-
-			@Override
-			public List toList() {
-				return null;
-			}
-		};
-		executePomAction.launch(selection, "run");
-	}
 
 	private void makeActions() {
 		
@@ -144,14 +95,6 @@ public class MulesoftHotDeploy extends ViewPart {
 		selectAllProjects.setImageDescriptor(
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_ADD));
 		
-		mavenBuildSelectedProjects = new Action() {
-			public void run() {
-				invokeMaven();
-			}
-		};
-		
-		
-		
 		unselectAllProjects = new Action() {
 			public void run() {
 				deploymentHandler.unselectAllProjects();
@@ -162,13 +105,12 @@ public class MulesoftHotDeploy extends ViewPart {
 		unselectAllProjects.setImageDescriptor(
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ELCL_COLLAPSEALL));
 		
+		
 		mavenBuildSelectedProjects = new Action() {
 			public void run() {
-				invokeMaven();
+				deploymentHandler.invokeMavenForSelectedModules();
 			}
 		};
-		
-		
 		mavenBuildSelectedProjects.setText("Construire les projets sélectionnés");
 		mavenBuildSelectedProjects.setToolTipText("Construire les projets sélectionnés");
 		mavenBuildSelectedProjects.setImageDescriptor(
@@ -176,10 +118,10 @@ public class MulesoftHotDeploy extends ViewPart {
 
 		deploySelectedProjectsAction = new Action() {
 			public void run() {
-				showMessage("Action 1 executed");
+				deploymentHandler.deployModulesFromFolder(true);
 			}
 		};
-		deploySelectedProjectsAction.setText("Déployer les projets sélectionnés");
+		deploySelectedProjectsAction.setText("Déployer les projets construits");
 		deploySelectedProjectsAction.setToolTipText("Déployer les projets sélectionnés");
 		deploySelectedProjectsAction.setImageDescriptor(
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_UP));

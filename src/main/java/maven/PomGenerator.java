@@ -31,10 +31,11 @@ public enum PomGenerator {
 			"				%s                                     		                                                     \n"  +
 			"				</pomIncludes>                                                                                   \n"  +
 			"			  <streamLogs>true</streamLogs>                                                                      \n"  +
-			"			  <goals>      																						 \n"
-			+ "			   <goal>-o</goal>                                                                                     \n"  +
+			"			  <goals>      																						 \n"  +
+			"			   <goal>-o</goal>                                                                                   \n"  +
 			"			   <goal>clean</goal>                                                                                \n"  +
 			"			   <goal>package</goal>                                                                              \n"  +
+			"			   <goal>-DskipTests</goal>                                                                          \n"  +
 			"			  </goals>                                                                                           \n"  +
 			"			  <parallelThreads>4</parallelThreads>                                                               \n"  +
 			"            </configuration>                                                                                    \n"  +

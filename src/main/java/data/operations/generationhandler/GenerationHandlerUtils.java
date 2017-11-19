@@ -4,27 +4,43 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.m2e.actions.ExecutePomAction;
 
 import data.dto.DeploymentStatus;
 import data.dto.Module;
 import data.operations.impl.ModuleSummary;
+import maven.PomGenerator;
+import utils.EclipsePluginHelper;
 
 public enum GenerationHandlerUtils {
 	INSTANCE;
 	public List<Path> getZipFiles(final List<Path> paths) {
-		return paths.stream().filter(path -> path.toString().endsWith(".zip")).collect(Collectors.toList());
+		try (final Stream<Path> streamPath = paths.stream()) {
+			return streamPath.filter(path -> path.toString().endsWith(".zip")).collect(Collectors.toList());
+		}
 	}
 
 	public List<Path> getAnchors(final List<Path> paths) {
-		return paths.stream().filter(path -> path.toString().endsWith("-anchor.txt")).collect(Collectors.toList());
+		try (final Stream<Path> streamPath = paths.stream()) {
+			return streamPath.filter(path -> path.toString().endsWith("-anchor.txt")).collect(Collectors.toList());
+		}
 	}
 
 	public List<Path> getDirectories(final List<Path> paths) {
-		return paths.stream().filter(Files::isDirectory).collect(Collectors.toList());
+		try (final Stream<Path> streamPath = paths.stream()) {
+			return streamPath.filter(Files::isDirectory).collect(Collectors.toList());
+		}
 	}
 
 	public boolean isMulesoftManaged(final ModuleSummary moduleSummary) {
@@ -48,13 +64,12 @@ public enum GenerationHandlerUtils {
 			if (null != moduleSummary.getAnchorPath() && null == moduleSummary.getZipPath()) {
 				deploymentStatus = DeploymentStatus.DEPLOYE;
 			}
-			
+
 			if (null != moduleSummary.getAnchorPath() && null != moduleSummary.getZipPath()) {
 				deploymentStatus = DeploymentStatus.DEPLOIEMENT_EN_COURS;
 			}
 
-			if (null == moduleSummary.getAnchorPath()
-					&& (null != moduleSummary.getZipPath())) {
+			if (null == moduleSummary.getAnchorPath() && (null != moduleSummary.getZipPath())) {
 				deploymentStatus = DeploymentStatus.DEPLOIEMENT_EN_COURS;
 			}
 		}
@@ -79,8 +94,8 @@ public enum GenerationHandlerUtils {
 
 	public Map<String, ModuleSummary> groupPathsByModuleType(final Path appDeploymentFolder) {
 		final List<Path> deploymentFolderContent;
-		try {
-			deploymentFolderContent = Files.list(appDeploymentFolder).collect(Collectors.toList());
+		try (Stream<Path> path = Files.list(appDeploymentFolder)) {
+			deploymentFolderContent = path.collect(Collectors.toList());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -122,8 +137,105 @@ public enum GenerationHandlerUtils {
 
 		return groupedPaths;
 	}
-	
+
 	public Map<String, Module> mapModulesByName(final List<Module> lstModules) {
 		return lstModules.stream().collect(Collectors.toMap(Module::getModuleName, Function.identity()));
+	}
+
+	public List<Module> listModulesFromAppsFolderState(final Path appDeploymentFolder) {
+		final Map<String, ModuleSummary> deploymentSummary = GenerationHandlerUtils.INSTANCE
+				.groupPathsByModuleType(appDeploymentFolder);
+
+		final EclipsePluginHelper eclipsePluginHelper = EclipsePluginHelper.INSTANCE;
+		return eclipsePluginHelper.listWorkspaceProjects().stream()
+				.filter(project -> eclipsePluginHelper.hasNatures(project, EclipsePluginHelper.M2E_NATURE,
+						EclipsePluginHelper.JAVA_NATURE))
+				.map(project -> this.constructModule(project, deploymentSummary)).collect(Collectors.toList());
+	}
+
+	public void markModuleToUndeployInDeploymentFolder(final Path appDeploymentFolder, final Module module) {
+		if (module.isMulesoftManaged()) {
+			System.err.println("module géré par Anypoint, undeployment ignoré");
+			return;
+		}
+		final Path anchorPath = groupPathsByModuleType(appDeploymentFolder).get(module.getModuleName()).getAnchorPath();
+		if (null != anchorPath) {
+			try {
+				anchorPath.toFile().delete();
+				System.out.println(String.format("%s marqué à enlever des déploiements", module));
+			} catch (Exception e) {
+				System.err.println("impossible de supprimer");
+			}
+		} else {
+			System.err.println(String.format(
+					"l'anchor %s n'est pas présent, undeployment ignoré (pas déployé au moment de la demande)",
+					anchorPath));
+		}
+
+		final Path zipPath = groupPathsByModuleType(appDeploymentFolder).get(module.getModuleName()).getZipPath();
+		if (null != zipPath && zipPath.toFile().exists()) {
+			try {
+				zipPath.toFile().delete();
+				System.out.println(String.format("%s supprimé", zipPath));
+			} catch (Exception e) {
+				System.err.println(String.format("impossible de supprimer %s", zipPath));
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void invokeMavenForSelectedModules(final String projectToUpdateOrCreate,
+			final List<IProject> selectedProjects) {
+		final IProject projectTarget = EclipsePluginHelper.INSTANCE
+				.createOrReturnExistingProject(projectToUpdateOrCreate, EclipsePluginHelper.M2E_NATURE);
+		PomGenerator.INSTANCE.generatePomForEclipseProjects(projectTarget, selectedProjects);
+		final ExecutePomAction executePomAction = new ExecutePomAction();
+		executePomAction.setInitializationData(null, null, "clean install");
+		final IStructuredSelection selection = new IStructuredSelection() {
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
+
+			@Override
+			public Object getFirstElement() {
+				return projectTarget;
+			}
+
+			@Override
+			public Iterator iterator() {
+				return null;
+			}
+
+			@Override
+			public int size() {
+				return 0;
+			}
+
+			@Override
+			public Object[] toArray() {
+				return null;
+			}
+
+			@Override
+			public List toList() {
+				return null;
+			}
+		};
+		executePomAction.launch(selection, "run");
+	}
+
+	private Module constructModule(final IProject eclipseProject, final Map<String, ModuleSummary> deploymentSummary) {
+		try {
+			final String name = eclipseProject.getDescription().getName();
+			final GenerationHandlerUtils deploymentHandlerUtils = GenerationHandlerUtils.INSTANCE;
+			final boolean isMulesoftManaged = deploymentHandlerUtils.isMulesoftManaged(deploymentSummary.get(name));
+			final DeploymentStatus deploymentStatus = deploymentHandlerUtils
+					.getDeploymentStatus(deploymentSummary.get(name));
+			return new Module(name, deploymentStatus, isMulesoftManaged);
+		} catch (CoreException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
