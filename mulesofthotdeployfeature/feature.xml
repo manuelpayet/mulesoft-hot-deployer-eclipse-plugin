@@ -4,16 +4,136 @@
       label="Mulesofthotdeployfeature"
       version="1.0.0.qualifier">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+   <description>
+      Copyright 2017 Manuel PAYET (https://github.com/manuelpayet)
+Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+or implied.
+See the License for the specific language governing permissions
+and
+limitations under the License.
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright>
+      Copyright 2017 Manuel PAYET (https://github.com/manuelpayet)
+Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+or implied.
+See the License for the specific language governing permissions
+and
+limitations under the License.
    </copyright>
 
-   <license url="http://www.example.com/license">
-      [Enter License Description here.]
+   <license url="">
+      .__          __          __                   
+  ____   ____     _____ |__| _______/  |______  |  | __ ____   ______ 
+ /    \ /  _ \   /     \|  |/  ___/\   __\__  \ |  |/ // __ \ /  ___/ 
+|   |  (  &lt;_&gt; ) |  Y Y  \  |\___ \  |  |  / __ \|    &lt;\  ___/ \___ \  
+|___|  /\____/  |__|_|  /__/____  &gt; |__| (____  /__|_ \\___  &gt;____  &gt; 
+     \/               \/        \/            \/     \/    \/     \/  
+
+
+     __                __    .__                                 
+    |__|__ __  _______/  |_  |  |__ _____  ______ ______ ___.__. 
+    |  |  |  \/  ___/\   __\ |  |  \\__  \ \____ \\____ &lt;   |  | 
+    |  |  |  /\___ \  |  |   |   Y  \/ __ \|  |_&gt; &gt;  |_&gt; &gt;___  | 
+/\__|  |____//____  &gt; |__|   |___|  (____  /   __/|   __// ____| 
+\______|          \/              \/     \/|__|   |__|   \/      
+
+
+                    .__    .___             __          
+_____    ____  ____ |__| __| _/____   _____/  |_  ______
+\__  \ _/ ___\/ ___\|  |/ __ |/ __ \ /    \   __\/  ___/
+ / __ \\  \__\  \___|  / /_/ \  ___/|   |  \  |  \___ \ 
+(____  /\___  &gt;___  &gt;__\____ |\___  &gt;___|  /__| /____  &gt;
+     \/     \/    \/        \/    \/     \/          \/ 
+
+
+                                                                           
+                                       ..,:.,                              
+                                     .,:;:&apos;;:,;::,:`                       
+                              ` ` :&apos;&apos;;;,::::;&apos;&apos;&apos;&apos;;;&apos;:,                     
+                              ```&apos;++&apos;&apos;&apos;;++;&apos;++&apos;++&apos;;&apos;;;:,                   
+                              +;+&apos;+##@##@#+##+####+&apos;+:&apos;&apos;,,.                
+                            ::&apos;&apos;+#####@#######+######+++&apos;:::`              
+                           ;;&apos;+####@#######@############&apos;&apos;,::`             
+                          :;&apos;+###&apos;@@##@@##+##############+&apos;;::`            
+                         &apos;++&apos;#####@#####@@@#############+#&apos;&apos;;,,            
+                        ;&apos;+&apos;++@+#@#####@@#@###@@@#####@###+#+;:,           
+                       :&apos;++##@##@@##@@####@##@##@##@@#######++::           
+                      `;+;++#@##@@@#@@@@#@##@#@@#####@#######++:,          
+                      :;+&apos;#++##@#@@#@@##@@#@#@@@#####@####@###+;:.         
+                      ;&apos;###+@@+@###@@@@##@@#@@@@@##@###########;;.         
+                     &apos;+&apos;#####@#@@##@##########@###@@#######@####;:,        
+                    ,&apos;##@##+###@@###@++###++##@#########@@@#####&apos;,,        
+                    ;&apos;++####+#@####@++++##+######@#####@@@@#####++:`       
+                    ;++#########+#+++#++++###############@@######&apos;&apos;,       
+                    ;;&apos;##@#@#@##+&apos;&apos;;#&apos;&apos;++&apos;####@#########@@@######+&apos;,       
+                   .&apos;:&apos;######+@&apos;++;&apos;+&apos;;&apos;&apos;+++###++#######@@@#####++&apos;.       
+                   `&apos;+&apos;###&apos;&apos;#+#&apos;&apos;;&apos;;;&apos;;&apos;;&apos;++++##+###+###@@@#####+&apos;;:       
+                   `:&apos;++###@+#+#&apos;;;;;&apos;&apos;;&apos;&apos;++&apos;+++++++###@@########+&apos;,`      
+                   `&apos;+#+@##+&apos;#++:;::;;&apos;;;;&apos;;&apos;++&apos;+#+++###@#######++&apos;:       
+                   &apos;&apos;&apos;#+#@##+#&apos;+;;,:;::;;;&apos;;;&apos;+&apos;&apos;&apos;&apos;+++#@#########+&apos;:       
+                   :&apos;&apos;+######&apos;+&apos;;;,:,,:;:;&apos;;;&apos;&apos;;;;&apos;#+############+&apos;,       
+                   ;;;+#######&apos;&apos;:,::::;:,:;:;;;+@####+###########++,       
+                   &apos;+++#@######;::&apos;#+++;;,;::&apos;++&apos;&apos;&apos;&apos;+############++;       
+                   :;++########&apos;:;:..::,,.:;;+&apos;+&apos;+&apos;;;+###########+&apos;;       
+                   `;###+#@####;,..:;@&apos;;&apos;`.:&apos;&apos;##&apos;#+#&apos;&apos;&apos;#########++&apos;,       
+                    :&apos;+###@+#@#:`.;..:;;:.`:;+#+;:;&apos;+&apos;&apos;+########++:`       
+                    ,&apos;&apos;++@#####,.````,;;..`:&apos;&apos;++&apos;;;;&apos;;;+########+;;`       
+                     &apos;&apos;++######,``,,.,,....:&apos;&apos;&apos;&apos;&apos;;;;&apos;&apos;&apos;&apos;########+:.        
+                     ,&apos;+#######.``.,,,.....:&apos;&apos;&apos;&apos;;;;:;;;&apos;#######+&apos;;,        
+                      &apos;+++#####````.,...`..:&apos;&apos;&apos;&apos;;;::;;;;#######+;,`        
+                      :&apos;+####++..```.,;....,;&apos;+&apos;+&apos;;;;;;&apos;+#+&apos;###+;:`        
+                       &apos;++###++..``.:;;`.``,;;&apos;;&apos;+&apos;;;;;;+#&apos;@##:&apos;:.         
+                       &apos;++++;&apos;;``..:&apos;+.....:;;+;;++;;;;;&apos;##@#+::.,         
+                        &apos;+++#&apos;;....;+,..,:&apos;;+++&apos;&apos;&apos;+&apos;;;;;+##@#+;:,`         
+                       ` &apos;&apos;+++&apos;...,&apos;;::,;+#+;+;++##++;;;#####+::           
+                         :&apos;++#&apos;,..&apos;+;;;;;&apos;+&apos;&apos;;+&apos;&apos;+###;&apos;&apos;#####+:`           
+                          ,++;+;,.;&apos;;++;;;&apos;;&apos;&apos;&apos;&apos;@##++;#&apos;#####:,            
+                           .+;+&apos;:,:;+,&apos;,```,.:&apos;@#+#:&apos;&apos;++###+;..            
+                            ;&apos;+&apos;:::;;;..:,.:;++&apos;&apos;&apos;+&apos;&apos;#+###: `              
+                            `:&apos;&apos;&apos;:;&apos;+:..`.,::::&apos;++##;+###&apos;.`               
+                              ++;&apos;;;;;....,::;;;&apos;&apos;+##@##+;,,               
+                              `+;&apos;;;:::.::;:;&apos;++;+++####;,.,               
+                                #+&apos;,:;:,:::::&apos;;&apos;##++###&apos;,....              
+                                  +::::,..;:&apos;&apos;&apos;+++#++##,.....`             
+                                  .:&apos;,:,,,;;;&apos;&apos;++&apos;;#++;,.....,.            
+                                   :,,;:;;&apos;;:&apos;&apos;&apos;;&apos;;#&apos;:.......,,.           
+                                   ,:,,:+&apos;;&apos;;&apos;&apos;:&apos;&apos;;&apos;+,.......,,,`          
+                                    :.::+++++#+;+;,;,.......::,,.`         
+                                   `..::++@##&apos;+;&apos;;&apos;:,,.....,:,,,..         
+                                     .;;#+#@#;&apos;;,,,,......,:,,.....        
+                                   `  ::+&apos;##&apos;++::,,.......:,........       
+                                `  ` `,,;++;:;::,.....`..:,.`````...`      
+                                 ` ` `,,:;:;::,..........,```````....      
+                                  `````,,::::,```...````&apos;````````....      
+                                  ```` ,:,,,,``````````.,````````....`     
+                                  `` ` ,,,,.```````````+`````````....`     
+                                 `` ` `,,,,  `````````,.`  ``````....`     
+                                  ` ` `&apos;,,  ``````````; `````.``.`...`     
+                                  ` ` .:,`, `````````,`` ` ``.```.....     
+                                    ` ,;`,;:`````````:`  ` ``````.....     
+                                    ``&apos;:,:::.```````.`` .  ```````....     
+                                   ` .,,.,,,,.`````` ` ..  ```````....     
+                                     :,:.,.:::`````````,`  ``````.`..,     
+                                    `;:,..,::.` ````  :   ``.```.``...     
+                                   ``:;`.,;;.``` ` ` .`` `.` ``` `.,`.     
+                                   `` `.:::,`  ``  ``: `.``` ``` .....     
+                                   `.,,,.,``   `   `:  .` ` `````..`..     
+                                   .,,..`     `` ` `` .``  `````.,`...     
+                                  ..,` `      ` ` `: `.    `` `..``.,`     
+                                 `.. ``       ` ` ..`.        `.```..`
    </license>
 
    <plugin
