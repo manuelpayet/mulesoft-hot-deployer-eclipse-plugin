@@ -14,8 +14,10 @@ import java.util.stream.Stream;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.m2e.actions.ExecutePomAction;
+import org.eclipse.m2e.actions.MavenLaunchConstants;
 
 import data.dto.DeploymentStatus;
 import data.dto.Module;
@@ -158,7 +160,8 @@ public enum GenerationHandlerUtils {
 			System.err.println("module géré par Anypoint, undeployment ignoré");
 			return;
 		}
-		final Path anchorPath = groupPathsByModuleType(appDeploymentFolder).get(module.getModuleName()).getAnchorPath();
+		final ModuleSummary moduleSummary = groupPathsByModuleType(appDeploymentFolder).get(module.getModuleName());
+		final Path anchorPath = null != moduleSummary ? moduleSummary.getAnchorPath() : null;
 		if (null != anchorPath) {
 			try {
 				anchorPath.toFile().delete();
@@ -172,7 +175,7 @@ public enum GenerationHandlerUtils {
 					anchorPath));
 		}
 
-		final Path zipPath = groupPathsByModuleType(appDeploymentFolder).get(module.getModuleName()).getZipPath();
+		final Path zipPath = null != moduleSummary ? moduleSummary.getZipPath() : null;
 		if (null != zipPath && zipPath.toFile().exists()) {
 			try {
 				zipPath.toFile().delete();
@@ -189,8 +192,7 @@ public enum GenerationHandlerUtils {
 		final IProject projectTarget = EclipsePluginHelper.INSTANCE
 				.createOrReturnExistingProject(projectToUpdateOrCreate, EclipsePluginHelper.M2E_NATURE);
 		PomGenerator.INSTANCE.generatePomForEclipseProjects(projectTarget, selectedProjects);
-		final ExecutePomAction executePomAction = new ExecutePomAction();
-		executePomAction.setInitializationData(null, null, "clean install");
+
 		final IStructuredSelection selection = new IStructuredSelection() {
 
 			@Override
@@ -223,7 +225,10 @@ public enum GenerationHandlerUtils {
 				return null;
 			}
 		};
-		executePomAction.launch(selection, "run");
+		final ExecutePomAction executePomCleanPackageAction = new ExecutePomAction();
+		executePomCleanPackageAction.setInitializationData(null, null, "-f maven-invoker-pom.xml clean package");
+		executePomCleanPackageAction.launch(selection, "run");
+
 	}
 
 	private Module constructModule(final IProject eclipseProject, final Map<String, ModuleSummary> deploymentSummary) {

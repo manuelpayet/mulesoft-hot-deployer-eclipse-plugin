@@ -49,21 +49,14 @@ public class GenerationHandler implements ModelChangedEventListener, FileChanged
 	public void deployModulesFromFolder(final boolean undeployExistingModules) {
 		final Path modulesToDeployFolder = Paths.get(EclipsePluginHelper.INSTANCE
 				.getProjectLocation(EclipsePluginHelper.INSTANCE.getProjectFromName(PROJECT_NAME_FOR_DEPLOYMENT))
-				.toString(), "target", "modules-hot-deploy");
+				.toString(), "modules-hot-deploy");
 		if (undeployExistingModules) {
 			undeployExistingModules();
 		}
 		System.out
 				.println(String.format("Déploiement de l'ensemble des modules présents dans %s", appDeploymentFolder));
 		try (final Stream<Path> modulesToDeployFolderStream = Files.list(modulesToDeployFolder)){
-			final List<Path> modulesToDeploy = modulesToDeployFolderStream
-					.filter(path -> path.toFile().isDirectory())
-					.filter(path -> Paths.get(path.toString(), "target").toFile().isDirectory())
-					.map(path -> Paths.get(path.toString(), "target")).map(this::getModuleToDeployFromPath)
-					.collect(Collectors.toList());
-			System.out.println(
-					String.format("Copie de %s dans le dossier de déploiement..., Mulesoft se chargera du reste :)",
-							modulesToDeploy));
+			final List<Path> modulesToDeploy = modulesToDeployFolderStream.collect(Collectors.toList());
 
 			for (final Path moduleToDeploy : modulesToDeploy) {
 				final Path destinationFile = Paths.get(appDeploymentFolder.toString(), moduleToDeploy.getFileName().toString());
@@ -77,21 +70,6 @@ public class GenerationHandler implements ModelChangedEventListener, FileChanged
 		}
 	}
 
-	private Path getModuleToDeployFromPath(final Path pathContainingModule) {
-		try (final Stream<Path> pathList = Files.list(pathContainingModule)){
-			final Optional<Path> module = 
-					pathList.filter(element -> element.toFile().isFile()
-							&& element.getFileName().toString().matches(".*[0-9]\\.[0-9]\\.[0-9]\\-SNAPSHOT\\.zip"))
-					.findFirst();
-			if (!module.isPresent()) {
-				throw new IllegalStateException(
-						String.format("impossible de trouver le module à déployer dans %s", pathContainingModule));
-			}
-			return module.get();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 	public void undeployExistingModules() {
 		final List<Module> listModulesFromDeploymentFolders = GenerationHandlerUtils.INSTANCE

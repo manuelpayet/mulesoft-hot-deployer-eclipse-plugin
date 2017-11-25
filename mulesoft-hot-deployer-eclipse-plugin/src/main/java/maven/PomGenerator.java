@@ -2,6 +2,7 @@ package maven;
 
 import java.io.ByteArrayInputStream;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -12,68 +13,149 @@ import utils.EclipsePluginHelper;
 
 public enum PomGenerator {
 	INSTANCE;
-
-	private final static String POM_TEMPLATE = "<project>                                                                    \n"  +
-			"  <modelVersion>4.0.0</modelVersion>                                                                            \n"  +
-			"  <groupId>com.mycompany.app</groupId>                                                                          \n"  +
-			"  <artifactId>my-app</artifactId>                                                                               \n"  +
-			"  <version>1</version>                                                                                          \n"  +
-			"  <packaging>pom</packaging>                                                                                    \n"  +
-			"      <build>                                                                                                   \n"  +
-			"        <plugins>                                                                                               \n"  +
-			"          <plugin>                                                                                              \n"  +
-			"            <artifactId>maven-invoker-plugin</artifactId>                                                       \n"  +
-			"            <version>3.0.1</version>                                                                            \n"  +
-			"			<configuration>                                                                                      \n"  +
-			"			  <projectsDirectory>%s</projectsDirectory> 	                                                     \n"  +
-			"			  <cloneProjectsTo>${project.build.directory}/modules-hot-deploy</cloneProjectsTo>					 \n"  +
-			"              <pomIncludes>                                                                                     \n"  +
-			"				%s                                     		                                                     \n"  +
-			"				</pomIncludes>                                                                                   \n"  +
-			"			  <streamLogs>true</streamLogs>                                                                      \n"  +
-			"			  <goals>      																						 \n"  +
-			"			   <goal>-o</goal>                                                                                   \n"  +
-			"			   <goal>clean</goal>                                                                                \n"  +
-			"			   <goal>package</goal>                                                                              \n"  +
-			"			   <goal>-DskipTests</goal>                                                                          \n"  +
-			"			  </goals>                                                                                           \n"  +
-			"			  <parallelThreads>4</parallelThreads>                                                               \n"  +
-			"            </configuration>                                                                                    \n"  +
-			"            <executions>                                                                                        \n"  +
-			"              <execution>                                                                                       \n"  +
-			"                <id>install</id>                                                                                \n"  +
-			"                <goals>                                                                                         \n"  +
-			"                  <goal>run</goal>                                                                              \n"  +
-			"                </goals>                                                                                        \n"  +
-			"              </execution>                                                                                      \n"  +
-			"            </executions>                                                                                       \n"  +
-			"          </plugin>                                                                                             \n"  +
-			"        </plugins>                                                                                              \n"  +
-			"      </build>                                                                                                  \n"  +
-			"</project>                                                                                                      ";
-	private final static String MODULE_TEMPLATE = "<pomInclude>%s/pom.xml</pomInclude>";
-
 	
-	public IFile generatePomForEclipseProjects(final IProject projectTarget, final List<IProject> eclipseMavenProjectList) {
+	private final static String POM_LAUNCHER = "<project>                                                                   \n" +
+			"	<modelVersion>4.0.0</modelVersion>                                       \n" +
+			"	<groupId>com.manuelpayet</groupId>                                       \n" +
+			"	<artifactId>maven-invoker</artifactId>                                   \n" +
+			"	<version>1</version>                                                     \n" +
+			"	<packaging>pom</packaging>                                               \n" +
+			"	<build>                                                                  \n" +
+			"		<plugins>                                                            \n" +
+			"			<plugin>                                                         \n" +
+			"				<artifactId>maven-invoker-plugin</artifactId>                \n" +
+			"				<groupId>org.apache.maven.plugins</groupId>                  \n" +
+			"				<version>3.0.1</version>                                     \n" +
+			"				<configuration>                                              \n" +
+			"					<cloneProjectsTo></cloneProjectsTo>                      \n" +
+			"					<streamLogs>true</streamLogs>							 \n" +
+			"				</configuration>                                             \n" +
+			"				<executions>                                                 \n" +
+			"					<execution>                                              \n" +
+			"						<id>construct-modules</id>                           \n" +
+			"						<goals>                                              \n" +
+			"							<goal>run</goal>                                 \n" +
+			"						</goals>                                             \n" +
+			"						<phase>package</phase>                               \n" +
+			"						<configuration>                                      \n" +
+			"							<pom>${project.basedir}/pom.xml</pom>            \n" +
+			"							<goals>                                          \n" +
+			"								<goal>clean</goal>                           \n" +
+			"								<goal>package</goal>                         \n" +
+			"								<goal>-DskipTests</goal>                     \n" +
+			"								<goal>-T1C</goal>                            \n" +
+			"							</goals>                                         \n" +
+			"						</configuration>                                     \n" +
+			"					</execution>                                             \n" +
+			"					<execution>                                              \n" +
+			"						<id>copy-modules</id>                                \n" +
+			"						<phase>package</phase>                               \n" +
+			"						<goals>                                              \n" +
+			"							<goal>run</goal>                                 \n" +
+			"						</goals>                                             \n" +
+			"						<configuration>                                      \n" +
+			"							<pom>${project.basedir}/pom.xml</pom>            \n" +
+			"							<goals>                                          \n" +
+			"								<goal>antrun:run</goal>                      \n" +
+			"							</goals>                                         \n" +
+			"						</configuration>                                     \n" +
+			"					</execution>                                             \n" +
+			"				</executions>                                                \n" +
+			"			</plugin>                                                        \n" +
+			"		</plugins>                                                           \n" +
+			"	</build>                                                                 \n" +
+			"</project>                                                                  \n" ;
+	
+	private final static String POM_TEMPLATE = "	<project>                                 \n"
+			+ "		<modelVersion>4.0.0</modelVersion>                                        \n"
+			+ "		<groupId>com.mycompany.app</groupId>                                      \n"
+			+ "		<artifactId>my-app</artifactId>                                           \n"
+			+ "		<version>1</version>                                                      \n"
+			+ "		<packaging>pom</packaging>                                                \n"
+			+ "     <properties><maven.deploy.skip>true</maven.deploy.skip></properties>"
+			+ "		<modules>                                                                 \n"
+			+ "			[MODULES]															  \n"
+			+ "		</modules>                                                                \n"
+			+ "		<build>                                                                   \n"
+			+ "			<plugins>                                                             \n"
+			+ "				<plugin>                                                          \n"
+			+ "					<artifactId>maven-antrun-plugin</artifactId>                  \n"
+			+ "					<version>1.7</version>                                        \n"
+		    + "	           			<configuration>                                           \n"
+		    + "	           				<tasks>                                               \n"
+		    + "	           						<delete dir=\"[BUILD_TARGET]\"/>   	          \n"
+		    + "	           						<mkdir dir=\"[BUILD_TARGET]\"/>   	          \n"
+		    + "	           						[ANT_TASKS]								      \n"
+		    + "	           				</tasks>                                              \n"
+		    + "	           			</configuration>                                          \n"
+		    + "	           			<goals>                                                   \n"
+		    + "	           				<goal>run</goal>                                      \n"
+		    + "	           			</goals>                                                  \n"
+		    + "	           	</plugin>                                                         \n"
+			+ "			</plugins>                                                            \n"
+			+ "		</build>                                                                  \n"
+			+ "	</project>																      ";
+
+	private final static String MODULE_TEMPLATE = "<module>../../../../../../../../../../../../../../../../../../../../%s</module>		";
+	private final static String ANT_TASKS_TEMPLATE = " <copy todir=\"[BUILD_TARGET]\">											         \n"
+			+ " 	<fileset dir=\"[BASE_DIR]\"> 								    						 \n"
+			+ " 		<include name=\"*-SNAPSHOT.zip\"/> 																	   		\n"
+			+ " 	</fileset>" + "</copy>																						\n";
+
+	public void generatePomForEclipseProjects(final IProject projectTarget,
+			final List<IProject> eclipseMavenProjectList) {
+		final String modules = generateModules(eclipseMavenProjectList);
+		String tempPom = replaceInTemplate(POM_TEMPLATE, "MODULES", modules);
+
+		final String buildTarget = Paths
+				.get(EclipsePluginHelper.INSTANCE.getProjectLocation(projectTarget).toString(), "modules-hot-deploy")
+				.toString().replaceAll("\\\\", "/");
+		tempPom = replaceInTemplate(tempPom, "BUILD_TARGET", buildTarget);
+		tempPom = replaceInTemplate(tempPom, "ANT_TASKS", generateAntTasks(buildTarget, eclipseMavenProjectList));
+
+		createFileWithContent(projectTarget, "pom.xml", tempPom);
+		
+		createFileWithContent(projectTarget, "maven-invoker-pom.xml", POM_LAUNCHER);
+		
+	}
+
+	private IFile createFileWithContent(final IProject projectTarget, final String filename, String content) {
+		final IFile projectPom = projectTarget.getFile(filename);
+		try {
+			if (projectPom.exists()) {
+				projectPom.delete(true, null);
+			}
+			projectPom.create(new ByteArrayInputStream(content.getBytes()), true, null);
+		} catch (CoreException coreException) {
+			throw new RuntimeException(coreException);
+		}
+		return projectPom;
+	}
+
+	private String generateModules(final List<IProject> eclipseMavenProjectList) {
 		final StringBuilder modulesStringBuilder = new StringBuilder();
 		for (final IProject mavenProject : eclipseMavenProjectList) {
 			final Path fullPath = EclipsePluginHelper.INSTANCE.getProjectLocation(mavenProject);
-			modulesStringBuilder.append(String.format(MODULE_TEMPLATE, fullPath.getFileName().toString()));
+			modulesStringBuilder.append(String.format(MODULE_TEMPLATE,
+					fullPath.toString().replace(fullPath.getRoot().toString(), "").replaceAll("\\\\", "/")));
 			modulesStringBuilder.append("\n");
 		}
-		final String tempPom = String.format(POM_TEMPLATE, EclipsePluginHelper.INSTANCE.getProjectLocation(eclipseMavenProjectList.get(0)).getParent(), modulesStringBuilder.toString());
-		
-		final IProject eclipseProject = projectTarget;
-		final IFile projectPom = eclipseProject.getFile("pom.xml");
-		try {
-			if(projectPom.exists()) {
-				projectPom.delete(true, null);
-			}
-			projectPom.create(new ByteArrayInputStream(tempPom.getBytes()), true, null);
-		} catch(CoreException coreException) {
-			throw new RuntimeException(coreException);
+		return modulesStringBuilder.toString();
+	}
+
+	private String generateAntTasks(final String buildTarget, final List<IProject> eclipseMavenProjectList) {
+		final StringBuilder antTasksBuilder = new StringBuilder();
+		for (final IProject mavenProject : eclipseMavenProjectList) {
+			String antTask = replaceInTemplate(ANT_TASKS_TEMPLATE, "BUILD_TARGET", buildTarget);
+			antTask = replaceInTemplate(antTask, "BASE_DIR",
+					Paths.get(EclipsePluginHelper.INSTANCE.getProjectLocation(mavenProject).toString(), "target")
+							.toString().replaceAll("\\\\", "/"));
+			antTasksBuilder.append(antTask);
 		}
-		
-		return projectPom;
+		return antTasksBuilder.toString();
+	}
+
+	private String replaceInTemplate(final String template, final String marker, final String content) {
+		return template.replaceAll(String.format("\\[%s\\]", marker), content);
 	}
 }
