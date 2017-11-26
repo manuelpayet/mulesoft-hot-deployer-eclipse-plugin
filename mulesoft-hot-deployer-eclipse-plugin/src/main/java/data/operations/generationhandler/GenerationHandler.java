@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,12 +53,14 @@ public class GenerationHandler implements ModelChangedEventListener, FileChanged
 			undeployExistingModules();
 		}
 		System.out
-				.println(String.format("Déploiement de l'ensemble des modules présents dans %s", appDeploymentFolder));
-		try (final Stream<Path> modulesToDeployFolderStream = Files.list(modulesToDeployFolder)){
+				.println(String.format("DÃ©ploiement de l'ensemble des modules prÃ©sents dans %s", appDeploymentFolder));
+
+		try (final Stream<Path> modulesToDeployFolderStream = Files.list(modulesToDeployFolder)) {
 			final List<Path> modulesToDeploy = modulesToDeployFolderStream.collect(Collectors.toList());
 
 			for (final Path moduleToDeploy : modulesToDeploy) {
-				final Path destinationFile = Paths.get(appDeploymentFolder.toString(), moduleToDeploy.getFileName().toString());
+				final Path destinationFile = Paths.get(appDeploymentFolder.toString(),
+						moduleToDeploy.getFileName().toString());
 				System.out.println(String.format("%s->%s", moduleToDeploy, appDeploymentFolder));
 				Files.copy(moduleToDeploy, destinationFile, StandardCopyOption.REPLACE_EXISTING,
 						StandardCopyOption.COPY_ATTRIBUTES);
@@ -69,7 +70,6 @@ public class GenerationHandler implements ModelChangedEventListener, FileChanged
 			throw new RuntimeException(e);
 		}
 	}
-
 
 	public void undeployExistingModules() {
 		final List<Module> listModulesFromDeploymentFolders = GenerationHandlerUtils.INSTANCE
@@ -107,7 +107,7 @@ public class GenerationHandler implements ModelChangedEventListener, FileChanged
 
 	public void selectAllProjects() {
 		final List<Module> lstModuleUpdated = getModelUpdate().getModules().stream().map((module) -> {
-			module.setToHotDeploy(true);
+			module.setToHotDeploy(!module.isMulesoftManaged());
 			return module;
 		}).collect(Collectors.toList());
 		getModelUpdate().setModules(lstModuleUpdated);

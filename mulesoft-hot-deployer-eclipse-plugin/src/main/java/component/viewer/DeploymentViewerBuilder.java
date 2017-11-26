@@ -15,7 +15,7 @@ class DeploymentViewerBuilder {
 	}
 
 	public void createColumns() {
-		String[] titles = { "A déployer", "Module", "Statut", "Responsable" };
+		String[] titles = { "A dÃ©ployer", "Module", "Statut", "Responsable" };
 		int[] bounds = { 150, 150, 150, 150 };
 		int columnIdx = 0;
 		TableViewerColumn column = createTableViewerColumn(titles[columnIdx], bounds[columnIdx], columnIdx++);

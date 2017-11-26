@@ -90,8 +90,8 @@ public class MulesoftHotDeploy extends ViewPart {
 				deploymentHandler.selectAllProjects();
 			}
 		};
-		selectAllProjects.setText("Sélectionner tous les projets");
-		selectAllProjects.setToolTipText("Sélectionner tous les projets");
+		selectAllProjects.setText("SÃ©lectionner tous les projets");
+		selectAllProjects.setToolTipText("SÃ©lectionner tous les projets");
 		selectAllProjects.setImageDescriptor(
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_ADD));
 		
@@ -100,8 +100,8 @@ public class MulesoftHotDeploy extends ViewPart {
 				deploymentHandler.unselectAllProjects();
 			}
 		};
-		unselectAllProjects.setText("Désélectionner tous les projets");
-		unselectAllProjects.setToolTipText("Désélectionner tous les projets");
+		unselectAllProjects.setText("DÃ©sÃ©lectionner tous les projets");
+		unselectAllProjects.setToolTipText("DÃ©sÃ©lectionner tous les projets");
 		unselectAllProjects.setImageDescriptor(
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ELCL_COLLAPSEALL));
 		
@@ -111,8 +111,8 @@ public class MulesoftHotDeploy extends ViewPart {
 				deploymentHandler.invokeMavenForSelectedModules();
 			}
 		};
-		mavenBuildSelectedProjects.setText("Construire les projets sélectionnés");
-		mavenBuildSelectedProjects.setToolTipText("Construire les projets sélectionnés");
+		mavenBuildSelectedProjects.setText("Construire les projets sï¿½lectionnï¿½s");
+		mavenBuildSelectedProjects.setToolTipText("Construire les projets sï¿½lectionnï¿½s");
 		mavenBuildSelectedProjects.setImageDescriptor(
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
@@ -121,8 +121,8 @@ public class MulesoftHotDeploy extends ViewPart {
 				deploymentHandler.deployModulesFromFolder(true);
 			}
 		};
-		deploySelectedProjectsAction.setText("Déployer les projets construits");
-		deploySelectedProjectsAction.setToolTipText("Déployer les projets sélectionnés");
+		deploySelectedProjectsAction.setText("DÃ©ployer les projets construits");
+		deploySelectedProjectsAction.setToolTipText("DÃ©ployer les projets sÃ©lectionnÃ©s");
 		deploySelectedProjectsAction.setImageDescriptor(
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_UP));
 	}

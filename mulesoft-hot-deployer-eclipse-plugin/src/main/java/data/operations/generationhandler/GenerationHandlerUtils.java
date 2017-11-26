@@ -157,7 +157,7 @@ public enum GenerationHandlerUtils {
 
 	public void markModuleToUndeployInDeploymentFolder(final Path appDeploymentFolder, final Module module) {
 		if (module.isMulesoftManaged()) {
-			System.err.println("module géré par Anypoint, undeployment ignoré");
+			System.err.println("module gÃ©rÃ© par Anypoint, undeployment ignorÃ©");
 			return;
 		}
 		final ModuleSummary moduleSummary = groupPathsByModuleType(appDeploymentFolder).get(module.getModuleName());
@@ -165,13 +165,13 @@ public enum GenerationHandlerUtils {
 		if (null != anchorPath) {
 			try {
 				anchorPath.toFile().delete();
-				System.out.println(String.format("%s marqué à enlever des déploiements", module));
+				System.out.println(String.format("%s marquÃ© Ã  enlever des dÃ©ploiements", module));
 			} catch (Exception e) {
 				System.err.println("impossible de supprimer");
 			}
 		} else {
 			System.err.println(String.format(
-					"l'anchor %s n'est pas présent, undeployment ignoré (pas déployé au moment de la demande)",
+					"l'anchor %s n'est pas prï¿½sent, undeployment ignorÃ© (pas dÃ©ployÃ© au moment de la demande)",
 					anchorPath));
 		}
 
@@ -179,7 +179,7 @@ public enum GenerationHandlerUtils {
 		if (null != zipPath && zipPath.toFile().exists()) {
 			try {
 				zipPath.toFile().delete();
-				System.out.println(String.format("%s supprimé", zipPath));
+				System.out.println(String.format("%s supprimï¿½", zipPath));
 			} catch (Exception e) {
 				System.err.println(String.format("impossible de supprimer %s", zipPath));
 				e.printStackTrace();
