@@ -27,6 +27,7 @@ public enum EclipsePluginHelper {
 
 	public final static String M2E_NATURE = "org.eclipse.m2e.core.maven2Nature";
 	public final static String JAVA_NATURE = "org.eclipse.jdt.core.javanature";
+	public final static String MAVEN_MULE_NATURE="org.mule.tooling.maven.mavenNature";
 
 	public List<IProject> listWorkspaceProjects() {
 		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();

@@ -150,7 +150,7 @@ public enum GenerationHandlerUtils {
 
 		final EclipsePluginHelper eclipsePluginHelper = EclipsePluginHelper.INSTANCE;
 		return eclipsePluginHelper.listWorkspaceProjects().stream()
-				.filter(project -> eclipsePluginHelper.hasNatures(project, EclipsePluginHelper.M2E_NATURE,
+				.filter(project -> eclipsePluginHelper.hasNatures(project, EclipsePluginHelper.MAVEN_MULE_NATURE,
 						EclipsePluginHelper.JAVA_NATURE))
 				.map(project -> this.constructModule(project, deploymentSummary)).collect(Collectors.toList());
 	}
