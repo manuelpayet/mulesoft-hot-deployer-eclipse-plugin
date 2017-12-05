@@ -22,7 +22,7 @@ import org.eclipse.m2e.actions.MavenLaunchConstants;
 import data.dto.DeploymentStatus;
 import data.dto.Module;
 import data.operations.impl.ModuleSummary;
-import maven.PomGenerator;
+import maven.PomHandler;
 import utils.EclipsePluginHelper;
 
 public enum GenerationHandlerUtils {
@@ -149,10 +149,11 @@ public enum GenerationHandlerUtils {
 				.groupPathsByModuleType(appDeploymentFolder);
 
 		final EclipsePluginHelper eclipsePluginHelper = EclipsePluginHelper.INSTANCE;
-		return eclipsePluginHelper.listWorkspaceProjects().stream()
+		final List<IProject> lstProjectsWithMuleNature = eclipsePluginHelper.listWorkspaceProjects().stream()
 				.filter(project -> eclipsePluginHelper.hasNatures(project, EclipsePluginHelper.MAVEN_MULE_NATURE,
-						EclipsePluginHelper.JAVA_NATURE))
-				.map(project -> this.constructModule(project, deploymentSummary)).collect(Collectors.toList());
+						EclipsePluginHelper.JAVA_NATURE)).collect(Collectors.toList());
+		final List<IProject> lstProjectsWithMulePackaging = lstProjectsWithMuleNature.stream().filter((project)-> "mule".equals(PomHandler.INSTANCE.getProjectType(project))).collect(Collectors.toList());
+		return lstProjectsWithMulePackaging.stream().map(project -> this.constructModule(project, deploymentSummary)).collect(Collectors.toList());
 	}
 
 	public void markModuleToUndeployInDeploymentFolder(final Path appDeploymentFolder, final Module module) {
@@ -191,7 +192,7 @@ public enum GenerationHandlerUtils {
 			final List<IProject> selectedProjects) {
 		final IProject projectTarget = EclipsePluginHelper.INSTANCE
 				.createOrReturnExistingProject(projectToUpdateOrCreate, EclipsePluginHelper.M2E_NATURE);
-		PomGenerator.INSTANCE.generatePomForEclipseProjects(projectTarget, selectedProjects);
+		PomHandler.INSTANCE.generatePomForEclipseProjects(projectTarget, selectedProjects);
 
 		final IStructuredSelection selection = new IStructuredSelection() {
 

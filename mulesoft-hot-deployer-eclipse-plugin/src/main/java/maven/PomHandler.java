@@ -1,19 +1,31 @@
 package maven;
 
-import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import utils.EclipsePluginHelper;
 
-public enum PomGenerator {
+public enum PomHandler {
 	INSTANCE;
-
+	private final DocumentBuilderFactory dbf;
+	private PomHandler() {
+		dbf = DocumentBuilderFactory.newInstance();
+	    dbf.setNamespaceAware(false);
+	    dbf.setValidating(false);
+	}
+	
 	private final static String POM_LAUNCHER = "<project>                                                                   \n"
 			+ "	<modelVersion>4.0.0</modelVersion>                                       \n"
 			+ "	<groupId>com.manuelpayet</groupId>                                       \n"
@@ -149,6 +161,17 @@ public enum PomGenerator {
 
 	private String replaceInTemplate(final String template, final String marker, final String content) {
 		return template.replaceAll(String.format("\\[%s\\]", marker), content);
+	}
+	
+	public String getProjectType(final IProject project) {
+		try {
+			final DocumentBuilder db = dbf.newDocumentBuilder();
+			project.getFile("pom.xml").refreshLocal(IResource.DEPTH_ZERO, null);
+			final Document document = db.parse(project.getFile("pom.xml").getContents());
+			return document.getElementsByTagName("packaging").item(0).getTextContent();
+		} catch (ParserConfigurationException | SAXException | IOException | CoreException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }
