@@ -83,15 +83,15 @@ public enum GenerationHandlerUtils {
 	}
 
 	public String extractModuleNameFromZip(final Path path) {
-		return path.getFileName().toString().replaceAll("(-[0-9]\\.[0-9]\\.[0-9]-SNAPSHOT)?.zip$", "");
+		return path.getFileName().toString().replaceAll("(-[0-9]\\.[0-9]\\.[0-9]+-SNAPSHOT)?.zip$", "");
 	}
 
 	public String extractModuleNameFromAnchor(final Path path) {
-		return path.getFileName().toString().replaceAll("(-[0-9]\\.[0-9]\\.[0-9]-SNAPSHOT)?\\-anchor.txt$", "");
+		return path.getFileName().toString().replaceAll("(-[0-9]\\.[0-9]\\.[0-9]+-SNAPSHOT)?\\-anchor.txt$", "");
 	}
 
 	public String extractModuleNameFromDirectory(final Path path) {
-		return path.getFileName().toString().replaceAll("-[0-9]\\.[0-9]\\.[0-9]-SNAPSHOT$", "");
+		return path.getFileName().toString().replaceAll("-[0-9]\\.[0-9]\\.[0-9]+-SNAPSHOT$", "");
 	}
 
 	public Map<String, ModuleSummary> groupPathsByModuleType(final Path appDeploymentFolder) {
@@ -180,7 +180,7 @@ public enum GenerationHandlerUtils {
 		if (null != zipPath && zipPath.toFile().exists()) {
 			try {
 				zipPath.toFile().delete();
-				System.out.println(String.format("%s supprim�", zipPath));
+				System.out.println(String.format("%s supprimé", zipPath));
 			} catch (Exception e) {
 				System.err.println(String.format("impossible de supprimer %s", zipPath));
 				e.printStackTrace();
