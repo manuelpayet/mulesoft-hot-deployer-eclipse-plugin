@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/mulesofthotdeployfeature_1.0.8.201712151258.jar" id="mulesofthotdeployfeature" version="1.0.8.201712151258">
+   <feature url="features/mulesofthotdeployfeature_1.0.9.201801231141.jar" id="mulesofthotdeployfeature" version="1.0.9.201801231141">
       <category name="deployment-helper"/>
    </feature>
    <category-def name="deployment-helper" label="Deployment Handler"/>
