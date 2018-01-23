@@ -12,6 +12,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.mule.tooling.runtime.MuleRuntimePlugin;
+import org.mule.tooling.runtime.events.IMuleRuntimeEventListener;
+import org.mule.tooling.runtime.events.MuleRuntimeEventTypes;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -56,6 +59,7 @@ public enum PomHandler {
 			+ "								<goal>clean</goal>                           \n"
 			+ "								<goal>package</goal>                         \n"
 			+ "								<goal>-DskipTests</goal>                     \n"
+			+ "								<goal>-Dskip.doc</goal>                      \n"
 			+ "								<goal>-T1C</goal>                            \n"
 			+ "							</goals>                                         \n"
 			+ "						</configuration>                                     \n"
