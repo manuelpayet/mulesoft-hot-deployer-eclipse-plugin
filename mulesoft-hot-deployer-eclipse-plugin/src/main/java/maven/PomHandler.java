@@ -1,6 +1,7 @@
 package maven;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -12,9 +13,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.mule.tooling.runtime.MuleRuntimePlugin;
-import org.mule.tooling.runtime.events.IMuleRuntimeEventListener;
-import org.mule.tooling.runtime.events.MuleRuntimeEventTypes;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -170,10 +168,9 @@ public enum PomHandler {
 	public String getProjectType(final IProject project) {
 		try {
 			final DocumentBuilder db = dbf.newDocumentBuilder();
-			project.getFile("pom.xml").refreshLocal(IResource.DEPTH_ZERO, null);
-			final Document document = db.parse(project.getFile("pom.xml").getContents());
+			final Document document = db.parse(EclipsePluginHelper.INSTANCE.getFile(project, "pom.xml"));
 			return document.getElementsByTagName("packaging").item(0).getTextContent();
-		} catch (ParserConfigurationException | SAXException | IOException | CoreException e) {
+		} catch (ParserConfigurationException | SAXException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}

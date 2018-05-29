@@ -233,15 +233,11 @@ public enum GenerationHandlerUtils {
 	}
 
 	private Module constructModule(final IProject eclipseProject, final Map<String, ModuleSummary> deploymentSummary) {
-		try {
-			final String name = eclipseProject.getDescription().getName();
-			final GenerationHandlerUtils deploymentHandlerUtils = GenerationHandlerUtils.INSTANCE;
-			final boolean isMulesoftManaged = deploymentHandlerUtils.isMulesoftManaged(deploymentSummary.get(name));
-			final DeploymentStatus deploymentStatus = deploymentHandlerUtils
-					.getDeploymentStatus(deploymentSummary.get(name));
-			return new Module(name, deploymentStatus, isMulesoftManaged);
-		} catch (CoreException e) {
-			throw new RuntimeException(e);
-		}
+		final String name = eclipseProject.getName();
+		final GenerationHandlerUtils deploymentHandlerUtils = GenerationHandlerUtils.INSTANCE;
+		final boolean isMulesoftManaged = deploymentHandlerUtils.isMulesoftManaged(deploymentSummary.get(name));
+		final DeploymentStatus deploymentStatus = deploymentHandlerUtils
+				.getDeploymentStatus(deploymentSummary.get(name));
+		return new Module(name, deploymentStatus, isMulesoftManaged);
 	}
 }

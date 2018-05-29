@@ -2,6 +2,7 @@ package utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -11,6 +12,14 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -19,6 +28,9 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public enum EclipsePluginHelper {
 	INSTANCE();
@@ -43,19 +55,36 @@ public enum EclipsePluginHelper {
 		return Paths.get(project.getLocation().toOSString());
 	}
 
-	public boolean hasNatures(final IProject project, final String... natureIds) {
+	private boolean hasNature(final IProject project, final String natureId) {
 		try {
-			for (String natureId : natureIds) {
-				if (!project.hasNature(natureId)) {
-					return false;
-				}
-			}
-			return true;
-		} catch (CoreException e) {
+			final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			final DocumentBuilder builder = factory.newDocumentBuilder();
+			final Document document = builder.parse(Paths.get(getAbsolutePathOfProject(project), ".project").toFile());
+			XPath xPath =  XPathFactory.newInstance().newXPath();
+			NodeList nodeList = (NodeList) xPath.compile(String.format("/projectDescription/natures/nature[text()=\"%s\"]", natureId)).evaluate(document, XPathConstants.NODESET);
+			return nodeList.getLength() > 0;
+		} catch (IOException | ParserConfigurationException | SAXException | XPathExpressionException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
+	private String getAbsolutePathOfProject(final IProject project) {
+		return project.getWorkspace().getRoot().getFile(project.getLocation()).getFullPath().toFile().getAbsolutePath().toString();
+	}
+	
+	public boolean hasNatures(final IProject project, final String... natureIds) {
+		for (String natureId : natureIds) {
+			if (!this.hasNature(project, natureId)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public File getFile(final IProject project, final String file) {
+		return Paths.get(getAbsolutePathOfProject(project), file).toFile();
+	}
+	
 	public Path getWorkspaceLocation() {
 		return Paths.get(ResourcesPlugin.getWorkspace().getRoot().getLocationURI());
 	}
