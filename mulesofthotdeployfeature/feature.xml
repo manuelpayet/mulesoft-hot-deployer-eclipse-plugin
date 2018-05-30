@@ -2,7 +2,7 @@
 <feature
       id="mulesofthotdeployfeature"
       label="Mulesofthotdeployfeature"
-      version="1.0.9.qualifier">
+      version="1.0.10.qualifier">
 
    <description>
       Copyright 2017 Manuel PAYET (https://github.com/manuelpayet)
